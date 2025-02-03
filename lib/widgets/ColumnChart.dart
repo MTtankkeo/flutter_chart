@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_chart/components/ChartController.dart';
-import 'package:flutter_chart/types.dart';
+import 'package:flutter_chart/components/types.dart';
 import 'package:flutter_chart/widgets/DrivenChart.dart';
 
 class ColumnChartData {
@@ -34,7 +34,11 @@ class ColumnChart extends DrivenChart<num> {
     this.separatedBorderColor = Colors.black,
     this.separatedBorderWidth,
     this.separatedLineCap = StrokeCap.square,
+    this.barTextMargin = 10,
+    this.barTextStyle = const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+    this.barTextAlignment = ChartBarTextAlignment.leading,
     this.isVisibleSeparatedText = true,
+    this.isVisibleBarText = false,
     this.isVisibleLabel = true,
   });
 
@@ -53,8 +57,12 @@ class ColumnChart extends DrivenChart<num> {
   final Color separatedBorderColor;
   final double? separatedBorderWidth;
   final StrokeCap separatedLineCap;
+  final double barTextMargin;
+  final TextStyle barTextStyle;
+  final ChartBarTextAlignment barTextAlignment;
 
-  final bool isVisibleSeparatedText; 
+  final bool isVisibleSeparatedText;
+  final bool isVisibleBarText;
   final bool isVisibleLabel;
 
   @override
@@ -71,7 +79,6 @@ class _ColumnChartState extends State<ColumnChart> {
   Widget build(BuildContext context) {
     return CustomPaint(
       painter: ColumnChartPainter(
-        spacing: 15,
         datas: widget.datas,
         backgroundColor: widget.backgroundColor,
         barRatio: widget.barRatio,
@@ -85,7 +92,11 @@ class _ColumnChartState extends State<ColumnChart> {
         separatedBorderColor: widget.separatedBorderColor,
         separatedBorderWidth: widget.separatedBorderWidth ?? widget.separatedLineWidth,
         separatedLineCap: widget.separatedLineCap,
+        barTextMargin: widget.barTextMargin,
+        barTextStyle: widget.barTextStyle,
+        barTextAlignment: widget.barTextAlignment,
         isVisibleSeparatedText: widget.isVisibleSeparatedText,
+        isVisibleBarText: widget.isVisibleBarText,
         isVisibleLabel: widget.isVisibleLabel
       ),
       size: Size(widget.width, widget.height),
@@ -107,8 +118,11 @@ class ColumnChartPainter extends CustomPainter {
     required this.separatedBorderColor,
     required this.separatedBorderWidth,
     required this.separatedLineCap,
-    required this.spacing,
+    required this.barTextMargin,
+    required this.barTextStyle,
+    required this.barTextAlignment,
     required this.isVisibleSeparatedText,
+    required this.isVisibleBarText,
     required this.isVisibleLabel,
     required this.datas,
   });
@@ -125,8 +139,12 @@ class ColumnChartPainter extends CustomPainter {
   final Color separatedBorderColor;
   final double separatedBorderWidth;
   final StrokeCap separatedLineCap;
-  final double spacing;
+  final double barTextMargin;
+  final TextStyle barTextStyle;
+  final ChartBarTextAlignment barTextAlignment;
+
   final bool isVisibleSeparatedText;
+  final bool isVisibleBarText;
   final bool isVisibleLabel;
 
   final List<ColumnChartData> datas;
@@ -151,10 +169,7 @@ class ColumnChartPainter extends CustomPainter {
         // Draw about the text.
         final text = "${(maxValue - percent * maxValue).round()}";
         final textPainter = TextPainter(
-          text: TextSpan(
-            text: text,
-            style: separatedTextStyle,
-          ),
+          text: TextSpan(text: text, style: separatedTextStyle),
           textDirection: TextDirection.ltr,
         );
 
@@ -205,23 +220,42 @@ class ColumnChartPainter extends CustomPainter {
     if (datas.isEmpty) return;
 
     final maxWidth = size.width - consumed.width;
-    final maxHeight = size.height - consumed.height - (separatedBorderWidth / 2);
+    final maxHeight = size.height - consumed.height - (separatedBorderWidth * barRatio);
     final areaWidth = maxWidth / datas.length;
-    final barWidth = areaWidth / 2;
+    final barWidth = areaWidth * barRatio;
 
     for (int i = 0; i < datas.length; i++) {
-      final current = datas[i];
-      final height = (current.value / maxValue) * maxHeight;
+      final target = datas[i];
+      final height = (target.value / maxValue) * maxHeight;
 
       // About the position of a bar.
       final startX = consumed.width + (areaWidth * i) + (areaWidth - barWidth) / 2;
       final startY = maxHeight - height;
-      final paint = Paint()..color = current.color;
+      final paint = Paint()..color = target.color;
 
       canvas.drawRect(
         Rect.fromLTRB(startX, startY, startX + barWidth, maxHeight),
         paint,
       );
+
+      if (isVisibleBarText) {
+        final textPainter = TextPainter(
+          text: TextSpan(text: "${target.value.round()}", style: barTextStyle),
+          textDirection: TextDirection.ltr,
+        );
+
+        textPainter.layout(maxWidth: maxWidth);
+
+        final textWidth = textPainter.width;
+        final textHeight = textPainter.height;
+        final textStartX = startX + (barWidth - textWidth) / 2;
+
+        switch (barTextAlignment) {
+          case ChartBarTextAlignment.center: textPainter.paint(canvas, Offset(textStartX, startY + height / 2)); break;
+          case ChartBarTextAlignment.leading: textPainter.paint(canvas, Offset(textStartX, startY + barTextMargin)); break;
+          case ChartBarTextAlignment.trailing: textPainter.paint(canvas, Offset(textStartX, (startY + height) - textHeight - barTextMargin)); break;
+        }
+      }
     }
   }
 

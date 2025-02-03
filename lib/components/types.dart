@@ -3,7 +3,13 @@
 enum ChartSeparatedTextAlignment {
   center,
   leading,
-  trailing,
+  trailing
+}
+
+enum ChartBarTextAlignment {
+  center,
+  leading,
+  trailing
 }
 
 /// Signature for the enumeration that defines rounding modes for numerical values.
