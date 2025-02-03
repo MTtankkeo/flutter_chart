@@ -25,6 +25,7 @@ class ColumnChart extends DrivenChart<num> {
     this.backgroundColor,
     this.barRatio = 0.5,
     this.maxValue,
+    this.markType = ChartMarkType.integer,
     this.separatedLineCount = 5,
     this.separatedLineWidth = 1,
     this.separatedLineColor = const Color.fromRGBO(230, 230, 230, 1),
@@ -34,8 +35,10 @@ class ColumnChart extends DrivenChart<num> {
     this.separatedBorderColor = Colors.black,
     this.separatedBorderWidth,
     this.separatedLineCap = StrokeCap.square,
+    this.labelTextMargin = 5,
+    this.labelTextStyle = const TextStyle(fontSize: 14, color: Colors.black),
     this.barTextMargin = 10,
-    this.barTextStyle = const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+    this.barTextStyle = const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
     this.barTextAlignment = ChartBarTextAlignment.leading,
     this.isVisibleSeparatedText = true,
     this.isVisibleBarText = false,
@@ -47,6 +50,7 @@ class ColumnChart extends DrivenChart<num> {
   final Color? backgroundColor;
   final double barRatio;
   final double? maxValue;
+  final ChartMarkType markType;
 
   final int separatedLineCount;
   final Color separatedLineColor;
@@ -57,6 +61,8 @@ class ColumnChart extends DrivenChart<num> {
   final Color separatedBorderColor;
   final double? separatedBorderWidth;
   final StrokeCap separatedLineCap;
+  final double labelTextMargin;
+  final TextStyle labelTextStyle;
   final double barTextMargin;
   final TextStyle barTextStyle;
   final ChartBarTextAlignment barTextAlignment;
@@ -83,6 +89,7 @@ class _ColumnChartState extends State<ColumnChart> {
         backgroundColor: widget.backgroundColor,
         barRatio: widget.barRatio,
         maxValue: widget.maxValue ?? values.reduce((a, b) => max(a, b)),
+        markType: widget.markType,
         separatedLineCount: widget.separatedLineCount,
         separatedLineColor: widget.separatedLineColor,
         separatedLineWidth: widget.separatedLineWidth,
@@ -92,6 +99,8 @@ class _ColumnChartState extends State<ColumnChart> {
         separatedBorderColor: widget.separatedBorderColor,
         separatedBorderWidth: widget.separatedBorderWidth ?? widget.separatedLineWidth,
         separatedLineCap: widget.separatedLineCap,
+        labelTextMargin: widget.labelTextMargin,
+        labelTextStyle: widget.labelTextStyle,
         barTextMargin: widget.barTextMargin,
         barTextStyle: widget.barTextStyle,
         barTextAlignment: widget.barTextAlignment,
@@ -109,6 +118,7 @@ class ColumnChartPainter extends CustomPainter {
     required this.backgroundColor,
     required this.barRatio,
     required this.maxValue,
+    required this.markType,
     required this.separatedLineCount,
     required this.separatedLineWidth,
     required this.separatedLineColor,
@@ -118,6 +128,8 @@ class ColumnChartPainter extends CustomPainter {
     required this.separatedBorderColor,
     required this.separatedBorderWidth,
     required this.separatedLineCap,
+    required this.labelTextMargin,
+    required this.labelTextStyle,
     required this.barTextMargin,
     required this.barTextStyle,
     required this.barTextAlignment,
@@ -130,6 +142,7 @@ class ColumnChartPainter extends CustomPainter {
   final Color? backgroundColor;
   final double barRatio;
   final double maxValue;
+  final ChartMarkType markType;
   final int separatedLineCount;
   final Color separatedLineColor;
   final double separatedLineWidth;
@@ -139,6 +152,8 @@ class ColumnChartPainter extends CustomPainter {
   final Color separatedBorderColor;
   final double separatedBorderWidth;
   final StrokeCap separatedLineCap;
+  final double labelTextMargin;
+  final TextStyle labelTextStyle;
   final double barTextMargin;
   final TextStyle barTextStyle;
   final ChartBarTextAlignment barTextAlignment;
@@ -155,19 +170,25 @@ class ColumnChartPainter extends CustomPainter {
 
   Size drawBackground(Canvas canvas, Size size) {
     final separatedTextPainters = <TextPainter>[];
+    final labelTextPainters = <TextPainter>[];
     final separatedLinePaint = Paint()
       ..strokeWidth = separatedLineWidth
       ..strokeCap = separatedLineCap
       ..color = separatedLineColor;
 
     double separatedTextMaxWidth = 0;
+    double bottomLabelAreaHeight = 0;
 
     if (isVisibleSeparatedText) {
       for (int i = 0; i < separatedLineCount; i++) {
         final percent = i / (separatedLineCount - 1);
 
         // Draw about the text.
-        final text = "${(maxValue - percent * maxValue).round()}";
+        final value = (maxValue - percent * maxValue).round();
+        final text = markType == ChartMarkType.integer
+          ? "$value"
+          : "$value%";
+
         final textPainter = TextPainter(
           text: TextSpan(text: text, style: separatedTextStyle),
           textDirection: TextDirection.ltr,
@@ -180,18 +201,35 @@ class ColumnChartPainter extends CustomPainter {
       }
     }
 
+    if (isVisibleLabel) {
+      for (int i = 0; i < datas.length; i++) {
+        final textPainter = TextPainter(
+          text: TextSpan(text: datas[i].label, style: labelTextStyle),
+          textDirection: TextDirection.ltr
+        );
+
+        textPainter.layout();
+
+        labelTextPainters.add(textPainter);
+        bottomLabelAreaHeight = max(bottomLabelAreaHeight, textPainter.height);
+      }
+
+      bottomLabelAreaHeight += labelTextMargin;
+    }
+
     final innerLeft = separatedTextMaxWidth + separatedTextMargin;
+    final bodyWidth = size.width - innerLeft;
 
     if (backgroundColor != null) {
       canvas.drawRect(Rect.fromLTRB(innerLeft, 0, size.width, size.height), Paint()..color = backgroundColor!);
     }
 
-    // Darw about the separated text and line.
+    // Darw about the separated text and label and line.
     for (int i = 0; i < separatedLineCount; i++) {
       final percent = i / (separatedLineCount - 1);
-      final height = size.height * percent;
+      final height = (size.height - bottomLabelAreaHeight) * percent;
 
-      // About text.
+      // About separated text.
       if (isVisibleSeparatedText) {
         final textPainter = separatedTextPainters[i];
         final textWidth = textPainter.width;
@@ -213,7 +251,22 @@ class ColumnChartPainter extends CustomPainter {
       canvas.drawLine(Offset(innerLeft, height), Offset(size.width, height), separatedLinePaint);
     }
 
-    return Size(innerLeft, 0);
+    // Draw the label texts.
+    for (int i = 0; i < datas.length; i++) {
+      final percent = i / (datas.length);
+
+      if (isVisibleLabel) {
+        final textPainter = labelTextPainters[i];
+        final areaLeft = bodyWidth * percent;
+        final areaWidth = bodyWidth / datas.length;
+        final textWidth = textPainter.width;
+        final textHeight = size.height - bottomLabelAreaHeight;
+
+        textPainter.paint(canvas, Offset(((innerLeft + areaLeft) + areaWidth / 2) - textWidth / 2, textHeight + labelTextMargin));
+      }
+    }
+
+    return Size(innerLeft, bottomLabelAreaHeight);
   }
 
   void drawForeground(Canvas canvas, Size size, Size consumed) {
@@ -233,10 +286,7 @@ class ColumnChartPainter extends CustomPainter {
       final startY = maxHeight - height;
       final paint = Paint()..color = target.color;
 
-      canvas.drawRect(
-        Rect.fromLTRB(startX, startY, startX + barWidth, maxHeight),
-        paint,
-      );
+      canvas.drawRect(Rect.fromLTRB(startX, startY, startX + barWidth, maxHeight), paint);
 
       if (isVisibleBarText) {
         final textPainter = TextPainter(
@@ -249,6 +299,11 @@ class ColumnChartPainter extends CustomPainter {
         final textWidth = textPainter.width;
         final textHeight = textPainter.height;
         final textStartX = startX + (barWidth - textWidth) / 2;
+
+        // Not drawing when overflow in layout calculation for the bar text.
+        if (height < textHeight + barTextMargin * 2) {
+          continue;
+        }
 
         switch (barTextAlignment) {
           case ChartBarTextAlignment.center: textPainter.paint(canvas, Offset(textStartX, startY + height / 2)); break;

@@ -12,6 +12,11 @@ enum ChartBarTextAlignment {
   trailing
 }
 
+enum ChartMarkType {
+  integer,
+  percent
+}
+
 /// Signature for the enumeration that defines rounding modes for numerical values.
 enum ChartRoundingModes {
   none,
