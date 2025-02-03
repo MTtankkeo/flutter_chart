@@ -83,6 +83,9 @@ class _ColumnChartState extends State<ColumnChart> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final defaultTextStyle = theme.textTheme.bodyMedium ?? TextStyle();
+
     return CustomPaint(
       painter: ColumnChartPainter(
         datas: widget.datas,
@@ -90,6 +93,7 @@ class _ColumnChartState extends State<ColumnChart> {
         barRatio: widget.barRatio,
         maxValue: widget.maxValue ?? values.reduce((a, b) => max(a, b)),
         markType: widget.markType,
+        defaultTextStyle: defaultTextStyle,
         separatedLineCount: widget.separatedLineCount,
         separatedLineColor: widget.separatedLineColor,
         separatedLineWidth: widget.separatedLineWidth,
@@ -119,6 +123,7 @@ class ColumnChartPainter extends CustomPainter {
     required this.barRatio,
     required this.maxValue,
     required this.markType,
+    required this.defaultTextStyle,
     required this.separatedLineCount,
     required this.separatedLineWidth,
     required this.separatedLineColor,
@@ -143,6 +148,7 @@ class ColumnChartPainter extends CustomPainter {
   final double barRatio;
   final double maxValue;
   final ChartMarkType markType;
+  final TextStyle defaultTextStyle;
   final int separatedLineCount;
   final Color separatedLineColor;
   final double separatedLineWidth;
@@ -190,7 +196,7 @@ class ColumnChartPainter extends CustomPainter {
           : "$value%";
 
         final textPainter = TextPainter(
-          text: TextSpan(text: text, style: separatedTextStyle),
+          text: TextSpan(text: text, style: defaultTextStyle.merge(separatedTextStyle)),
           textDirection: TextDirection.ltr,
         );
 
@@ -204,7 +210,7 @@ class ColumnChartPainter extends CustomPainter {
     if (isVisibleLabel) {
       for (int i = 0; i < datas.length; i++) {
         final textPainter = TextPainter(
-          text: TextSpan(text: datas[i].label, style: labelTextStyle),
+          text: TextSpan(text: datas[i].label, style: defaultTextStyle.merge(labelTextStyle)),
           textDirection: TextDirection.ltr
         );
 
@@ -290,7 +296,7 @@ class ColumnChartPainter extends CustomPainter {
 
       if (isVisibleBarText) {
         final textPainter = TextPainter(
-          text: TextSpan(text: "${target.value.round()}", style: barTextStyle),
+          text: TextSpan(text: "${target.value.round()}", style: defaultTextStyle.merge(barTextStyle)),
           textDirection: TextDirection.ltr,
         );
 
