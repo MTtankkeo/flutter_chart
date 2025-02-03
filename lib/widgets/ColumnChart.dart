@@ -27,7 +27,7 @@ class ColumnChart extends DrivenChart<num> {
     this.maxValue,
     this.markType = ChartMarkType.integer,
     this.separatedLineCount = 5,
-    this.separatedLineWidth = 1,
+    this.separatedLineWidth = 2,
     this.separatedLineColor = const Color.fromRGBO(230, 230, 230, 1),
     this.separatedTextStyle = const TextStyle(fontSize: 14, color: Colors.black),
     this.separatedTextMargin = 15,
