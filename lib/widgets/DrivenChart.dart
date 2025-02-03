@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 
-abstract class DrivenChart<T> extends StatefulWidget {
+/// This abstract classs that defines a comprehensive chart widget.
+abstract class DrivenChart extends StatefulWidget {
   const DrivenChart({
     super.key,
     required this.width,

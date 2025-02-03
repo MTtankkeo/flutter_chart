@@ -1,22 +1,17 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter_chart/components/ChartController.dart';
+import 'package:flutter_chart/components/ChartLabeledData.dart';
 import 'package:flutter_chart/components/types.dart';
 import 'package:flutter_chart/widgets/DrivenChart.dart';
 
-class ColumnChartData {
-  const ColumnChartData({
-    required this.label,
-    required this.value,
-    required this.color,
-  });
-
-  final String label;
-  final double value;
-  final Color color;
-}
-
-class ColumnChart extends DrivenChart<num> {
+/// ## Introduction
+/// A column chart is a method of displaying data with categories
+/// represented by a rectangle—sometimes called vertical bar charts.
+/// They allow easy comparisons among a number of items and trends analysis.
+/// 
+/// ## Preview
+/// ![preview](https://github.com/user-attachments/assets/a81e24cc-ec07-472f-a284-54f41ee21236)
+class ColumnChart extends DrivenChart {
   const ColumnChart({
     super.key,
     super.width = 500,
@@ -43,9 +38,9 @@ class ColumnChart extends DrivenChart<num> {
     this.isVisibleSeparatedText = true,
     this.isVisibleBarText = false,
     this.isVisibleLabel = true,
-  });
+  }) : assert(separatedLineCount > 1);
 
-  final List<ColumnChartData> datas;
+  final List<ChartLabeledData> datas;
 
   final Color? backgroundColor;
   final double barRatio;
@@ -76,8 +71,6 @@ class ColumnChart extends DrivenChart<num> {
 }
 
 class _ColumnChartState extends State<ColumnChart> {
-  final ChartController controller = ChartController();
-
   /// Returns a list that defines values from the given data list.
   List<double> get values => widget.datas.map((data) => data.value).toList();
 
@@ -168,7 +161,7 @@ class ColumnChartPainter extends CustomPainter {
   final bool isVisibleBarText;
   final bool isVisibleLabel;
 
-  final List<ColumnChartData> datas;
+  final List<ChartLabeledData> datas;
 
   double layoutGroupLabels() {
     return 0;
@@ -225,9 +218,10 @@ class ColumnChartPainter extends CustomPainter {
 
     final innerLeft = separatedTextMaxWidth + separatedTextMargin;
     final bodyWidth = size.width - innerLeft;
+    final bodyHeight = size.height - bottomLabelAreaHeight;
 
     if (backgroundColor != null) {
-      canvas.drawRect(Rect.fromLTRB(innerLeft, 0, size.width, size.height), Paint()..color = backgroundColor!);
+      canvas.drawRect(Rect.fromLTRB(innerLeft, 0, size.width, bodyHeight), Paint()..color = backgroundColor!);
     }
 
     // Darw about the separated text and label and line.
