@@ -5,3 +5,12 @@ enum ChartSeparatedTextAlignment {
   leading,
   trailing,
 }
+
+/// Signature for the enumeration that defines rounding modes for numerical values.
+enum ChartRoundingModes {
+  none,
+  ceil,
+  floor,
+  round,
+  cutoff
+}
