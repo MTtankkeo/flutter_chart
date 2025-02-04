@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chart/components/types.dart';
+import 'package:flutter_chartx/components/types.dart';
 
 class ChartStyle extends InheritedWidget {
   const ChartStyle({

@@ -1,9 +1,9 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter_chart/components/ChartLabeledData.dart';
-import 'package:flutter_chart/components/types.dart';
-import 'package:flutter_chart/widgets/ChartStyle.dart';
-import 'package:flutter_chart/widgets/DrivenChart.dart';
+import 'package:flutter_chartx/components/ChartLabeledData.dart';
+import 'package:flutter_chartx/components/types.dart';
+import 'package:flutter_chartx/widgets/ChartStyle.dart';
+import 'package:flutter_chartx/widgets/DrivenChart.dart';
 
 /// ## Introduction
 /// A column chart is a method of displaying data with categories

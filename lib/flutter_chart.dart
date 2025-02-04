@@ -1,4 +1,4 @@
-library flutter_chart;
+library flutter_chartx;
 
 export 'widgets/ChartStyle.dart';
 export 'widgets/DrivenChart.dart';
