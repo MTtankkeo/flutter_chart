@@ -5,7 +5,7 @@ This package provides widgets that can draw simple graphs to complex chart graph
 
 | Chart Type | Description | 🎞️ Animation | ✋ Interaction |
 | ---------- | ----------- | ------------ | ----------- |
-| 🟢 ColumnChart | Current supported. | 🟡 | 🟡 |
+| 🟢 ColumnChart | Current supported. | 🟢 | 🟢 |
 | 🔴 LineChart   | Not support yet.   | 🟡 | 🟡 |
 | 🔴 PieChart    | Not support yet.   | 🟡 | 🟡 |
 
