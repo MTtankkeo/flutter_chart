@@ -34,3 +34,31 @@ ColumnChart(
     ],
 )
 ```
+
+### The Properties of ColumnChart
+| Name | Description | Type |
+| ---- | ----------- | ---- |
+| datas | The values that defines current the datas of column chart. | List<ChartLabeledData> |
+| backgroundColor | The background color excluding the separated text area and the bottom labels area. | Color? |
+| barRatio | The ratio that is rate of width at which the bar is rendered in the bar area. | double |
+| maxValue | The value that defines the maximum value in this chart. | double? |
+| markType | The value that defines type of how to display values in a chart. | ChartMarkType |
+| theme | The value that defines the theme in this chart. | ChartTheme? |
+| theme | The value that defines the theme in this chart. | ChartTheme? |
+| separatedLineCount | Not commented yet. | int |
+| separatedLineColor | Not commented yet. | Color? |
+| separatedLineWidth | Not commented yet. | double |
+| separatedTextStyle | Not commented yet. | TextStyle? |
+| separatedTextMargin | Not commented yet. | double |
+| separatedTextAlignment | Not commented yet. | ChartSeparatedTextAlignment |
+| separatedBorderColor | Not commented yet. | Color? |
+| separatedBorderWidth | Not commented yet. | double? |
+| separatedLineCap | Not commented yet. | StrokeCap |
+| labelTextMargin | Not commented yet. | double |
+| labelTextStyle | Not commented yet. | TextStyle? |
+| barTextMargin | Not commented yet. | double |
+| barTextStyle | Not commented yet. | TextStyle? |
+| barTextAlignment | Not commented yet. | ChartBarTextAlignment |
+| isVisibleSeparatedText | Not commented yet. | bool |
+| isVisibleBarText | Not commented yet. | bool |
+| isVisibleLabel | Not commented yet. | bool |

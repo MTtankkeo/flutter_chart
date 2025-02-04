@@ -42,12 +42,22 @@ class ColumnChart extends DrivenChart {
     this.isVisibleLabel = true,
   }) : assert(separatedLineCount > 1);
 
+  /// The values that defines current the datas of column chart.
   final List<ChartLabeledData> datas;
 
+  /// The background color excluding the separated text area and the bottom labels area.
   final Color? backgroundColor;
+
+  /// The ratio that is rate of width at which the bar is rendered in the bar area.
   final double barRatio;
+
+  /// The value that defines the maximum value in this chart.
   final double? maxValue;
+
+  /// The value that defines type of how to display values in a chart.
   final ChartMarkType markType;
+
+  /// The value that defines the theme in this chart.
   final ChartTheme? theme;
 
   final int separatedLineCount;
@@ -59,8 +69,10 @@ class ColumnChart extends DrivenChart {
   final Color? separatedBorderColor;
   final double? separatedBorderWidth;
   final StrokeCap separatedLineCap;
+
   final double labelTextMargin;
   final TextStyle? labelTextStyle;
+
   final double barTextMargin;
   final TextStyle? barTextStyle;
   final ChartBarTextAlignment barTextAlignment;

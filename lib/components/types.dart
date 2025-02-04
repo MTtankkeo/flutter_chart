@@ -6,12 +6,14 @@ enum ChartSeparatedTextAlignment {
   trailing
 }
 
+/// Signature for the enumeration that defines alignment type about bar text.
 enum ChartBarTextAlignment {
   center,
   leading,
   trailing
 }
 
+/// Signature for the enumeration that defines type of how to display values in a chart.
 enum ChartMarkType {
   integer,
   percent
