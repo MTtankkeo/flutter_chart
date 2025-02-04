@@ -37,7 +37,7 @@ class ColumnChart extends DrivenChart {
     this.separatedTextAlignment = ChartSeparatedTextAlignment.trailing,
     this.separatedBorderColor,
     this.separatedBorderWidth,
-    this.separatedLineCap = StrokeCap.square,
+    this.separatedLineCap = StrokeCap.butt,
     this.labelTextMargin = 5,
     this.labelTextStyle,
     this.barTextMargin = 10,
@@ -100,6 +100,9 @@ class ColumnChart extends DrivenChart {
 class _ColumnChartState extends State<ColumnChart> with ChartContext, TickerProviderStateMixin {
   late final ChartController<ChartLabeledState> _controller = widget.controller ?? ChartController();
 
+  late final _fadeController = AnimationController(vsync: this, duration: animation.fadeDuration);
+  late final _fadeAnimation = CurvedAnimation(parent: _fadeController, curve: animation.fadeCurve!);
+
   /// Returns a list that defines values from the given data list.
   List<double> get values => widget.datas.map((data) => data.value).toList();
 
@@ -119,8 +122,8 @@ class _ColumnChartState extends State<ColumnChart> with ChartContext, TickerProv
 
   ChartAnimation get defaultAnimation {
     return ChartAnimation(
-      fadeDuration: Duration(milliseconds: 500),
-      fadeCurve: Curves.easeInOutCubic,
+      fadeDuration: Duration(seconds: 1),
+      fadeCurve: Curves.easeOutQuart,
       transitionDuration: Duration(milliseconds: 500),
       transitionCurve: Curves.easeInOutQuad
     );
@@ -166,6 +169,10 @@ class _ColumnChartState extends State<ColumnChart> with ChartContext, TickerProv
     super.initState();
     _controller.addListener(didUpdate);
 
+    // About initial fade-in animation effect.
+    _fadeController.forward();
+    _fadeController.addListener(didUpdate);
+
     for (final data in widget.datas) {
       _controller.attach(createState(data));
     }
@@ -174,6 +181,7 @@ class _ColumnChartState extends State<ColumnChart> with ChartContext, TickerProv
   @override
   void dispose() {
     _controller.removeListener(didUpdate);
+    _fadeController.removeListener(didUpdate);
     super.dispose();
   }
 
@@ -223,6 +231,7 @@ class _ColumnChartState extends State<ColumnChart> with ChartContext, TickerProv
         barRatio: widget.barRatio,
         maxValue: widget.maxValue ?? states.map((e) => e.value).reduce((a, b) => max(a, b)),
         markType: widget.markType,
+        fadePercent: _fadeAnimation.value,
         defaultTextStyle: defaultTextStyle,
         separatedLineCount: widget.separatedLineCount,
         separatedLineColor: widget.separatedLineColor ?? defaultSeparatedLineColor,
@@ -253,6 +262,7 @@ class ColumnChartPainter extends CustomPainter {
     required this.barRatio,
     required this.maxValue,
     required this.markType,
+    required this.fadePercent,
     required this.defaultTextStyle,
     required this.separatedLineCount,
     required this.separatedLineWidth,
@@ -278,6 +288,7 @@ class ColumnChartPainter extends CustomPainter {
   final double barRatio;
   final double maxValue;
   final ChartMarkType markType;
+  final double fadePercent;
   final TextStyle defaultTextStyle;
   final int separatedLineCount;
   final Color separatedLineColor;
@@ -416,7 +427,7 @@ class ColumnChartPainter extends CustomPainter {
 
     for (int i = 0; i < states.length; i++) {
       final target = states[i];
-      final height = (target.value / maxValue) * maxHeight;
+      final height = ((target.value * fadePercent) / maxValue) * maxHeight;
 
       // About the position of a bar.
       final startX = consumed.width + (areaWidth * i) + (areaWidth - barWidth) / 2;
@@ -426,8 +437,9 @@ class ColumnChartPainter extends CustomPainter {
       canvas.drawRect(Rect.fromLTRB(startX, startY, startX + barWidth, maxHeight), paint);
 
       if (isVisibleBarText) {
+        final text = "${target.value.round()}";
         final textPainter = TextPainter(
-          text: TextSpan(text: "${target.value.round()}", style: defaultTextStyle.merge(barTextStyle)),
+          text: TextSpan(text: text, style: defaultTextStyle.merge(barTextStyle)),
           textDirection: TextDirection.ltr,
         );
 
