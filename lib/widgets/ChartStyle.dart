@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chartx/components/ChartAnimation.dart';
 import 'package:flutter_chartx/components/types.dart';
 
 class ChartStyle extends InheritedWidget {
   const ChartStyle({
     super.key, 
     required super.child,
-    this.theme
+    this.theme,
+    this.animation
   });
 
   final ChartTheme? theme;
+  final ChartAnimation? animation;
 
   /// Returns the [ChartStyle] most closely associated with the given
   /// context, and returns null if there is no [ChartStyle] associated
@@ -19,6 +22,7 @@ class ChartStyle extends InheritedWidget {
 
   @override
   bool updateShouldNotify(covariant ChartStyle oldWidget) {
-    return theme != oldWidget.theme;
+    return theme != oldWidget.theme
+        || animation != oldWidget.animation;
   }
 }
