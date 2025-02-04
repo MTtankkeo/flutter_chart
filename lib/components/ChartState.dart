@@ -40,13 +40,16 @@ class ChartLabeledState extends ChartState {
   void updateTo(ChartLabeledData given) {
     final double oldValue = value;
     final double newValue = given.value;
-
+    
     _tween.begin = oldValue;
     _tween.end = newValue;
     data = given;
-    _controller.stop();
-    _controller.reset();
-    _controller.forward();
+
+    if (oldValue != newValue) {
+      _controller.stop();
+      _controller.reset();
+      _controller.forward();
+    }
   }
 
   @override
