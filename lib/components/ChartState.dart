@@ -1,6 +1,6 @@
-import 'package:flutter/animation.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_chartx/components/ChartLabeledData.dart';
+import 'package:flutter_chartx/components/ChartPosition.dart';
 import 'package:flutter_chartx/widgets/ChartContext.dart';
 
 abstract class ChartState extends Listenable {
@@ -9,6 +9,9 @@ abstract class ChartState extends Listenable {
 
   /// Returns the value for about the chart data.
   double get value;
+
+  /// Returns whether a given offset fits the chart position.
+  bool hitTest(Offset point);
 }
 
 class ChartLabeledState extends ChartState {
@@ -26,6 +29,7 @@ class ChartLabeledState extends ChartState {
   late final Tween<double> _tween;
 
   ChartLabeledData data;
+  ChartPosition? position;
 
   @override
   void addListener(VoidCallback listener) {
@@ -40,7 +44,7 @@ class ChartLabeledState extends ChartState {
   void updateTo(ChartLabeledData given) {
     final double oldValue = value;
     final double newValue = given.value;
-    
+
     _tween.begin = oldValue;
     _tween.end = newValue;
     data = given;
@@ -57,4 +61,9 @@ class ChartLabeledState extends ChartState {
 
   @override
   double get value => _tween.transform(_animation.value);
+
+  @override
+  bool hitTest(Offset point) {
+    return position?.hitTest(point) ?? false;
+  }
 }

@@ -1,3 +1,7 @@
+import 'package:flutter_chartx/components/ChartState.dart';
+
+/// Signature for the callback function that is called when gesture actioned.
+typedef ChartInteractionCallback<T extends ChartState> = void Function(T state);
 
 /// Signature for the enumeration that defines alignment type about separated text.
 enum ChartSeparatedTextAlignment {

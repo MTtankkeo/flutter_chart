@@ -45,7 +45,9 @@ ColumnChart(
 | maxValue | The value that defines the maximum value in this chart. | double? |
 | markType | The value that defines type of how to display values in a chart. | ChartMarkType |
 | theme | The value that defines the theme in this chart. | ChartTheme? |
-| theme | The value that defines the theme in this chart. | ChartTheme? |
+| onTap | The callback that is called when each bar in the column chart is single tapped. | ChartInteractionCallback? |
+| onDoubleTap | The callback that is called when each bar in the column chart is double tapped. | ChartInteractionCallback? |
+| onLongPress | The callback that is called when each bar in the column chart is long pressed. | ChartInteractionCallback? |
 | separatedLineCount | Not commented yet. | int |
 | separatedLineColor | Not commented yet. | Color? |
 | separatedLineWidth | Not commented yet. | double |

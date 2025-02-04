@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chartx/components/ChartAnimation.dart';
 import 'package:flutter_chartx/components/ChartController.dart';
 import 'package:flutter_chartx/components/ChartLabeledData.dart';
+import 'package:flutter_chartx/components/ChartPosition.dart';
 import 'package:flutter_chartx/components/ChartState.dart';
 import 'package:flutter_chartx/components/types.dart';
 import 'package:flutter_chartx/widgets/ChartContext.dart';
@@ -29,6 +30,9 @@ class ColumnChart extends DrivenChart {
     this.maxValue,
     this.markType = ChartMarkType.integer,
     this.theme,
+    this.onTap,
+    this.onDoubleTap,
+    this.onLongPress,
     this.separatedLineCount = 5,
     this.separatedLineWidth = 2,
     this.separatedLineColor,
@@ -71,6 +75,15 @@ class ColumnChart extends DrivenChart {
 
   /// The value that defines the theme in this chart.
   final ChartTheme? theme;
+
+  /// The callback that is called when each bar in the column chart is single tapped.
+  final ChartInteractionCallback? onTap;
+
+  /// The callback that is called when each bar in the column chart is double tapped.
+  final ChartInteractionCallback? onDoubleTap;
+
+  /// The callback that is called when each bar in the column chart is long pressed.
+  final ChartInteractionCallback? onLongPress;
 
   final int separatedLineCount;
   final Color? separatedLineColor;
@@ -224,34 +237,55 @@ class _ColumnChartState extends State<ColumnChart> with ChartContext, TickerProv
     final contextTheme = Theme.of(context);
     final defaultTextStyle = contextTheme.textTheme.bodyMedium ?? TextStyle();
 
-    return CustomPaint(
-      painter: ColumnChartPainter(
-        states: _controller.states,
-        backgroundColor: widget.backgroundColor,
-        barRatio: widget.barRatio,
-        maxValue: widget.maxValue ?? states.map((e) => e.value).reduce((a, b) => max(a, b)),
-        markType: widget.markType,
-        fadePercent: _fadeAnimation.value,
-        defaultTextStyle: defaultTextStyle,
-        separatedLineCount: widget.separatedLineCount,
-        separatedLineColor: widget.separatedLineColor ?? defaultSeparatedLineColor,
-        separatedLineWidth: widget.separatedLineWidth,
-        separatedTextStyle: defaultSeparatedTextStyle.merge(widget.separatedTextStyle),
-        separatedTextMargin: widget.separatedTextMargin,
-        separatedTextAlignment: widget.separatedTextAlignment,
-        separatedBorderColor: widget.separatedBorderColor ?? defaultSeparatedBorderColor,
-        separatedBorderWidth: widget.separatedBorderWidth ?? widget.separatedLineWidth,
-        separatedLineCap: widget.separatedLineCap,
-        labelTextMargin: widget.labelTextMargin,
-        labelTextStyle: defaultLabelTextStyle.merge(widget.labelTextStyle),
-        barTextMargin: widget.barTextMargin,
-        barTextStyle: defaultBarTextStyle.merge(widget.barTextStyle),
-        barTextAlignment: widget.barTextAlignment,
-        isVisibleSeparatedText: widget.isVisibleSeparatedText,
-        isVisibleBarText: widget.isVisibleBarText,
-        isVisibleLabel: widget.isVisibleLabel
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTapUp: widget.onTap != null ? (details) {
+        final target = _controller.findStateByHitTest(details.localPosition);
+        if (target != null) {
+          widget.onTap?.call(target);
+        }
+      } : null,
+      onDoubleTapDown: widget.onDoubleTap != null ? (details) {
+        final target = _controller.findStateByHitTest(details.localPosition);
+        if (target != null) {
+          widget.onDoubleTap?.call(target);
+        }
+      } : null,
+      onLongPressStart: widget.onLongPress != null ? (details) {
+        final target = _controller.findStateByHitTest(details.localPosition);
+        if (target != null) {
+          widget.onLongPress?.call(target);
+        }
+      } : null,
+      child: CustomPaint(
+        painter: ColumnChartPainter(
+          states: _controller.states,
+          backgroundColor: widget.backgroundColor,
+          barRatio: widget.barRatio,
+          maxValue: widget.maxValue ?? states.map((e) => e.value).reduce((a, b) => max(a, b)),
+          markType: widget.markType,
+          fadePercent: _fadeAnimation.value,
+          defaultTextStyle: defaultTextStyle,
+          separatedLineCount: widget.separatedLineCount,
+          separatedLineColor: widget.separatedLineColor ?? defaultSeparatedLineColor,
+          separatedLineWidth: widget.separatedLineWidth,
+          separatedTextStyle: defaultSeparatedTextStyle.merge(widget.separatedTextStyle),
+          separatedTextMargin: widget.separatedTextMargin,
+          separatedTextAlignment: widget.separatedTextAlignment,
+          separatedBorderColor: widget.separatedBorderColor ?? defaultSeparatedBorderColor,
+          separatedBorderWidth: widget.separatedBorderWidth ?? widget.separatedLineWidth,
+          separatedLineCap: widget.separatedLineCap,
+          labelTextMargin: widget.labelTextMargin,
+          labelTextStyle: defaultLabelTextStyle.merge(widget.labelTextStyle),
+          barTextMargin: widget.barTextMargin,
+          barTextStyle: defaultBarTextStyle.merge(widget.barTextStyle),
+          barTextAlignment: widget.barTextAlignment,
+          isVisibleSeparatedText: widget.isVisibleSeparatedText,
+          isVisibleBarText: widget.isVisibleBarText,
+          isVisibleLabel: widget.isVisibleLabel
+        ),
+        size: Size(widget.width, widget.height),
       ),
-      size: Size(widget.width, widget.height),
     );
   }
 }
@@ -433,8 +467,10 @@ class ColumnChartPainter extends CustomPainter {
       final startX = consumed.width + (areaWidth * i) + (areaWidth - barWidth) / 2;
       final startY = maxHeight - height;
       final paint = Paint()..color = target.data.color;
+      final rect = Rect.fromLTRB(startX, startY, startX + barWidth, maxHeight);
 
-      canvas.drawRect(Rect.fromLTRB(startX, startY, startX + barWidth, maxHeight), paint);
+      target.position = ChartPosition(path: Path()..addRect(rect));
+      canvas.drawRect(rect, paint);
 
       if (isVisibleBarText) {
         final text = "${target.value.round()}";

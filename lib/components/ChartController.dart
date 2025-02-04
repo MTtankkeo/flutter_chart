@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_chartx/components/ChartState.dart';
 
 /// Signature for the callback function that is called when the state changes.
@@ -25,6 +26,14 @@ class ChartController<T extends ChartState> {
   T? findStateByKey(dynamic key) {
     for (final state in _states) {
       if (state.key == key) return state;
+    }
+
+    return null;
+  }
+
+  T? findStateByHitTest(Offset point) {
+    for (final state in _states) {
+      if (state.hitTest(point)) return state;
     }
 
     return null;
