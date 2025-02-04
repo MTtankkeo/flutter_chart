@@ -1,7 +1,11 @@
 name: flutter_chart
-description: "A new Flutter package project."
-version: 0.0.1
-homepage:
+description: >
+  This package provides widgets that can draw simple graphs to complex chart graphs,
+  offering various customization options such as visibility, color, line width,
+  line color, text color, and more.
+version: 1.0.0-dev1
+publisher: ttankkeo112@gmail.com
+repository: https://github.com/MTtankkeo/flutter_touch_ripple
 
 environment:
   sdk: ^3.6.1
