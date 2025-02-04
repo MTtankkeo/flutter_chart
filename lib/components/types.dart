@@ -25,3 +25,9 @@ enum ChartRoundingModes {
   round,
   cutoff
 }
+
+/// Signature for the enumeration that defines the chart theme type.
+enum ChartTheme {
+  light,
+  dark
+}

@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_chart/components/ChartLabeledData.dart';
 import 'package:flutter_chart/components/types.dart';
+import 'package:flutter_chart/widgets/ChartStyle.dart';
 import 'package:flutter_chart/widgets/DrivenChart.dart';
 
 /// ## Introduction
@@ -21,19 +22,20 @@ class ColumnChart extends DrivenChart {
     this.barRatio = 0.5,
     this.maxValue,
     this.markType = ChartMarkType.integer,
+    this.theme,
     this.separatedLineCount = 5,
     this.separatedLineWidth = 2,
-    this.separatedLineColor = const Color.fromRGBO(230, 230, 230, 1),
-    this.separatedTextStyle = const TextStyle(fontSize: 14, color: Colors.black),
+    this.separatedLineColor,
+    this.separatedTextStyle,
     this.separatedTextMargin = 15,
     this.separatedTextAlignment = ChartSeparatedTextAlignment.trailing,
-    this.separatedBorderColor = Colors.black,
+    this.separatedBorderColor,
     this.separatedBorderWidth,
     this.separatedLineCap = StrokeCap.square,
     this.labelTextMargin = 5,
-    this.labelTextStyle = const TextStyle(fontSize: 14, color: Colors.black),
+    this.labelTextStyle,
     this.barTextMargin = 10,
-    this.barTextStyle = const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+    this.barTextStyle,
     this.barTextAlignment = ChartBarTextAlignment.leading,
     this.isVisibleSeparatedText = true,
     this.isVisibleBarText = false,
@@ -46,20 +48,21 @@ class ColumnChart extends DrivenChart {
   final double barRatio;
   final double? maxValue;
   final ChartMarkType markType;
+  final ChartTheme? theme;
 
   final int separatedLineCount;
-  final Color separatedLineColor;
+  final Color? separatedLineColor;
   final double separatedLineWidth;
-  final TextStyle separatedTextStyle;
+  final TextStyle? separatedTextStyle;
   final double separatedTextMargin;
   final ChartSeparatedTextAlignment separatedTextAlignment;
-  final Color separatedBorderColor;
+  final Color? separatedBorderColor;
   final double? separatedBorderWidth;
   final StrokeCap separatedLineCap;
   final double labelTextMargin;
-  final TextStyle labelTextStyle;
+  final TextStyle? labelTextStyle;
   final double barTextMargin;
-  final TextStyle barTextStyle;
+  final TextStyle? barTextStyle;
   final ChartBarTextAlignment barTextAlignment;
 
   final bool isVisibleSeparatedText;
@@ -74,10 +77,40 @@ class _ColumnChartState extends State<ColumnChart> {
   /// Returns a list that defines values from the given data list.
   List<double> get values => widget.datas.map((data) => data.value).toList();
 
+  ChartTheme get theme {
+    return widget.theme ?? ChartStyle.maybeOf(context)?.theme ?? ChartTheme.light;
+  }
+
+  Color get defaultSeparatedLineColor {
+    return theme == ChartTheme.light
+      ? const Color.fromRGBO(230, 230, 230, 1)
+      : const Color.fromRGBO(30, 30, 30, 1);
+  }
+
+  Color get defaultSeparatedBorderColor {
+    return theme == ChartTheme.light
+      ? Colors.black
+      : Colors.white;
+  }
+
+  TextStyle get defaultSeparatedTextStyle {
+    return theme == ChartTheme.light
+      ? const TextStyle(fontSize: 14, color: Colors.black)
+      : const TextStyle(fontSize: 14, color: Colors.white);
+  }
+
+  TextStyle get defaultLabelTextStyle => defaultSeparatedTextStyle;
+
+  TextStyle get defaultBarTextStyle {
+    return theme == ChartTheme.light
+      ? const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)
+      : const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final defaultTextStyle = theme.textTheme.bodyMedium ?? TextStyle();
+    final contextTheme = Theme.of(context);
+    final defaultTextStyle = contextTheme.textTheme.bodyMedium ?? TextStyle();
 
     return CustomPaint(
       painter: ColumnChartPainter(
@@ -88,18 +121,18 @@ class _ColumnChartState extends State<ColumnChart> {
         markType: widget.markType,
         defaultTextStyle: defaultTextStyle,
         separatedLineCount: widget.separatedLineCount,
-        separatedLineColor: widget.separatedLineColor,
+        separatedLineColor: widget.separatedLineColor ?? defaultSeparatedLineColor,
         separatedLineWidth: widget.separatedLineWidth,
-        separatedTextStyle: widget.separatedTextStyle,
+        separatedTextStyle: defaultSeparatedTextStyle.merge(widget.separatedTextStyle),
         separatedTextMargin: widget.separatedTextMargin,
         separatedTextAlignment: widget.separatedTextAlignment,
-        separatedBorderColor: widget.separatedBorderColor,
+        separatedBorderColor: widget.separatedBorderColor ?? defaultSeparatedBorderColor,
         separatedBorderWidth: widget.separatedBorderWidth ?? widget.separatedLineWidth,
         separatedLineCap: widget.separatedLineCap,
         labelTextMargin: widget.labelTextMargin,
-        labelTextStyle: widget.labelTextStyle,
+        labelTextStyle: defaultLabelTextStyle.merge(widget.labelTextStyle),
         barTextMargin: widget.barTextMargin,
-        barTextStyle: widget.barTextStyle,
+        barTextStyle: defaultBarTextStyle.merge(widget.barTextStyle),
         barTextAlignment: widget.barTextAlignment,
         isVisibleSeparatedText: widget.isVisibleSeparatedText,
         isVisibleBarText: widget.isVisibleBarText,
