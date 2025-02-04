@@ -48,10 +48,10 @@ class ColumnChart extends DrivenChart {
     this.isVisibleLabel = true,
   }) : assert(separatedLineCount > 1);
 
-  /// The values that defines current the datas of column chart.
+  /// The values that defines the current datas of column chart.
   final List<ChartLabeledData> datas;
 
-  /// The instance that defines current controller of the chart.
+  /// The instance that defines the current controller of the chart.
   final ChartController<ChartLabeledState>? controller;
 
   /// The instance that defines current animation setting values of the chart.
