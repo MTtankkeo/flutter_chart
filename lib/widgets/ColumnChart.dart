@@ -437,9 +437,17 @@ class ColumnChartPainter extends CustomPainter {
         final textHeight = height - textPainter.size.height / 2;
 
         switch (separatedTextAlignment) {
-          case ChartSeparatedTextAlignment.center: textPainter.paint(canvas, Offset((separatedTextMaxWidth - textWidth) / 2, textHeight)); break;
-          case ChartSeparatedTextAlignment.leading: textPainter.paint(canvas, Offset(0, textHeight)); break;
-          case ChartSeparatedTextAlignment.trailing: textPainter.paint(canvas, Offset(separatedTextMaxWidth - textWidth, textHeight)); break;
+          case ChartSeparatedTextAlignment.center:
+            textPainter.paint(canvas, Offset((separatedTextMaxWidth - textWidth) / 2, textHeight));
+            break;
+
+          case ChartSeparatedTextAlignment.leading:
+            textPainter.paint(canvas, Offset(0, textHeight));
+            break;
+
+          case ChartSeparatedTextAlignment.trailing:
+            textPainter.paint(canvas, Offset(separatedTextMaxWidth - textWidth, textHeight));
+            break;
         }
       }
 
@@ -516,10 +524,21 @@ class ColumnChartPainter extends CustomPainter {
         }
 
         switch (barTextAlignment) {
-          case ChartBarTextAlignment.center: textPainter.paint(canvas, Offset(textStartX, startY + height / 2)); break;
-          case ChartBarTextAlignment.inner_leading: textPainter.paint(canvas, Offset(textStartX, startY + barInnerTextMargin)); break;
-          case ChartBarTextAlignment.inner_trailing: textPainter.paint(canvas, Offset(textStartX, (startY + height) - textHeight - barInnerTextMargin)); break;
-          case ChartBarTextAlignment.outer: textPainter.paint(canvas, Offset(textStartX, (startY - textHeight) - barOuterTextMargin)); break;
+          case ChartBarTextAlignment.center:
+            textPainter.paint(canvas, Offset(textStartX, startY + height / 2));
+            break;
+
+          case ChartBarTextAlignment.inner_leading:
+            textPainter.paint(canvas, Offset(textStartX, startY + barInnerTextMargin));
+            break;
+
+          case ChartBarTextAlignment.inner_trailing:
+            textPainter.paint(canvas, Offset(textStartX, (startY + height) - textHeight - barInnerTextMargin));
+            break;
+
+          case ChartBarTextAlignment.outer:
+            textPainter.paint(canvas, Offset(textStartX, (startY - textHeight) - barOuterTextMargin));
+            break;
         }
       }
     }
