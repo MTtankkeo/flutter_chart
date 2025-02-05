@@ -6,7 +6,6 @@ import 'package:flutter_chartx/components/ChartController.dart';
 import 'package:flutter_chartx/components/ChartLabeledData.dart';
 import 'package:flutter_chartx/components/ChartPosition.dart';
 import 'package:flutter_chartx/components/ChartState.dart';
-import 'package:flutter_chartx/components/ChartTooltip.dart';
 import 'package:flutter_chartx/components/types.dart';
 import 'package:flutter_chartx/widgets/ChartContext.dart';
 import 'package:flutter_chartx/widgets/ChartStyle.dart';
