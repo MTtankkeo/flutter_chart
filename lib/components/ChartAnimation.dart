@@ -13,14 +13,15 @@ class ChartAnimation {
   final Duration? transitionDuration;
   final Curve? transitionCurve;
 
-  ChartAnimation merge(ChartAnimation? animation) {
-    if (animation == null) return this;
+  /// Returns a new chart animation that is a combination of this animation and the given [other] animation.
+  ChartAnimation merge(ChartAnimation? other) {
+    if (other == null) return this;
 
     return ChartAnimation(
-      fadeDuration: animation.fadeDuration ?? fadeDuration,
-      fadeCurve: animation.fadeCurve ?? fadeCurve,
-      transitionDuration: animation.transitionDuration ?? transitionDuration,
-      transitionCurve: animation.transitionCurve ?? transitionCurve,
+      fadeDuration: other.fadeDuration ?? fadeDuration,
+      fadeCurve: other.fadeCurve ?? fadeCurve,
+      transitionDuration: other.transitionDuration ?? transitionDuration,
+      transitionCurve: other.transitionCurve ?? transitionCurve,
     );
   }
 }

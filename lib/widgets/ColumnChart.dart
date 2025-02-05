@@ -45,9 +45,11 @@ class ColumnChart extends DrivenChart {
     this.separatedLineCap = StrokeCap.butt,
     this.labelTextMargin = 5,
     this.labelTextStyle,
-    this.barTextMargin = 10,
-    this.barTextStyle,
-    this.barTextAlignment = ChartBarTextAlignment.leading,
+    this.barInnerTextMargin = 10,
+    this.barOuterTextMargin = 3,
+    this.barInnerTextStyle,
+    this.barOuterTextStyle,
+    this.barTextAlignment = ChartBarTextAlignment.inner_leading,
     this.isVisibleSeparatedText = true,
     this.isVisibleBarText = false,
     this.isVisibleLabel = true,
@@ -99,8 +101,10 @@ class ColumnChart extends DrivenChart {
   final double labelTextMargin;
   final TextStyle? labelTextStyle;
 
-  final double barTextMargin;
-  final TextStyle? barTextStyle;
+  final double barInnerTextMargin;
+  final double barOuterTextMargin;
+  final ChartTextStyleBuilder<ChartLabeledState>? barInnerTextStyle;
+  final ChartTextStyleBuilder<ChartLabeledState>? barOuterTextStyle;
   final ChartBarTextAlignment barTextAlignment;
 
   final bool isVisibleSeparatedText;
@@ -157,10 +161,14 @@ class _ColumnChartState extends State<ColumnChart> with ChartContext, TickerProv
 
   TextStyle get defaultLabelTextStyle => defaultSeparatedTextStyle;
 
-  TextStyle get defaultBarTextStyle {
+  TextStyle get defaultBarInnerTextStyle {
     return theme == ChartTheme.light
       ? const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)
       : const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black);
+  }
+
+  TextStyle defaultBarOuterTextStyleOf(ChartLabeledState state) {
+    return TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: state.data.color);
   }
 
   ChartLabeledState createState(ChartLabeledData data) {
@@ -272,9 +280,15 @@ class _ColumnChartState extends State<ColumnChart> with ChartContext, TickerProv
           separatedLineCap: widget.separatedLineCap,
           labelTextMargin: widget.labelTextMargin,
           labelTextStyle: defaultLabelTextStyle.merge(widget.labelTextStyle),
-          barTextMargin: widget.barTextMargin,
-          barTextStyle: defaultBarTextStyle.merge(widget.barTextStyle),
+          barInnerTextMargin: widget.barInnerTextMargin,
+          barOuterTextMargin: widget.barOuterTextMargin,
           barTextAlignment: widget.barTextAlignment,
+          barInnerTextStyle: (state) {
+            return defaultBarInnerTextStyle.merge(widget.barInnerTextStyle?.call(state));
+          },
+          barOuterTextStyle: (state) {
+            return defaultBarOuterTextStyleOf(state).merge(widget.barOuterTextStyle?.call(state));
+          },
           isVisibleSeparatedText: widget.isVisibleSeparatedText,
           isVisibleBarText: widget.isVisibleBarText,
           isVisibleLabel: widget.isVisibleLabel
@@ -304,9 +318,11 @@ class ColumnChartPainter extends CustomPainter {
     required this.separatedLineCap,
     required this.labelTextMargin,
     required this.labelTextStyle,
-    required this.barTextMargin,
-    required this.barTextStyle,
+    required this.barInnerTextMargin,
+    required this.barOuterTextMargin,
     required this.barTextAlignment,
+    required this.barInnerTextStyle,
+    required this.barOuterTextStyle,
     required this.isVisibleSeparatedText,
     required this.isVisibleBarText,
     required this.isVisibleLabel,
@@ -330,15 +346,23 @@ class ColumnChartPainter extends CustomPainter {
   final StrokeCap separatedLineCap;
   final double labelTextMargin;
   final TextStyle labelTextStyle;
-  final double barTextMargin;
-  final TextStyle barTextStyle;
+  final double barInnerTextMargin;
+  final double barOuterTextMargin;
   final ChartBarTextAlignment barTextAlignment;
+  final ChartTextStyleBuilder<ChartLabeledState> barInnerTextStyle;
+  final ChartTextStyleBuilder<ChartLabeledState> barOuterTextStyle;
 
   final bool isVisibleSeparatedText;
   final bool isVisibleBarText;
   final bool isVisibleLabel;
 
   final List<ChartLabeledState> states;
+
+  bool get isInnerBarTextAlignment {
+    return barTextAlignment == ChartBarTextAlignment.center
+        || barTextAlignment == ChartBarTextAlignment.inner_leading
+        || barTextAlignment == ChartBarTextAlignment.inner_trailing;
+  }
 
   double layoutGroupLabels() {
     return 0;
@@ -470,7 +494,13 @@ class ColumnChartPainter extends CustomPainter {
       if (isVisibleBarText) {
         final text = "${target.value.round()}";
         final textPainter = TextPainter(
-          text: TextSpan(text: text, style: defaultTextStyle.merge(barTextStyle)),
+          text: TextSpan(text: text, style: defaultTextStyle.merge(
+                barTextAlignment == ChartBarTextAlignment.center
+             || barTextAlignment == ChartBarTextAlignment.inner_leading
+             || barTextAlignment == ChartBarTextAlignment.inner_trailing
+             ? barInnerTextStyle(target)
+             : barOuterTextStyle(target)
+          )),
           textDirection: TextDirection.ltr,
         );
 
@@ -481,14 +511,15 @@ class ColumnChartPainter extends CustomPainter {
         final textStartX = startX + (barWidth - textWidth) / 2;
 
         // Not drawing when overflow in layout calculation for the bar text.
-        if (height < textHeight + barTextMargin * 2) {
+        if (isInnerBarTextAlignment && height < textHeight + barInnerTextMargin * 2) {
           continue;
         }
 
         switch (barTextAlignment) {
           case ChartBarTextAlignment.center: textPainter.paint(canvas, Offset(textStartX, startY + height / 2)); break;
-          case ChartBarTextAlignment.leading: textPainter.paint(canvas, Offset(textStartX, startY + barTextMargin)); break;
-          case ChartBarTextAlignment.trailing: textPainter.paint(canvas, Offset(textStartX, (startY + height) - textHeight - barTextMargin)); break;
+          case ChartBarTextAlignment.inner_leading: textPainter.paint(canvas, Offset(textStartX, startY + barInnerTextMargin)); break;
+          case ChartBarTextAlignment.inner_trailing: textPainter.paint(canvas, Offset(textStartX, (startY + height) - textHeight - barInnerTextMargin)); break;
+          case ChartBarTextAlignment.outer: textPainter.paint(canvas, Offset(textStartX, (startY - textHeight) - barOuterTextMargin)); break;
         }
       }
     }

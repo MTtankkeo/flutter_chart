@@ -61,8 +61,10 @@ ColumnChart(
 | separatedLineCap | Not commented yet. | StrokeCap |
 | labelTextMargin | Not commented yet. | double |
 | labelTextStyle | Not commented yet. | TextStyle? |
-| barTextMargin | Not commented yet. | double |
-| barTextStyle | Not commented yet. | TextStyle? |
+| barInnerTextMargin | Not commented yet. | double |
+| barOuterTextMargin | Not commented yet. | double |
+| barTextInnerStyle | Not commented yet. | ChartTextStyleBuilder? |
+| barTextOuterStyle | Not commented yet. | ChartTextStyleBuilder? |
 | barTextAlignment | Not commented yet. | ChartBarTextAlignment |
 | isVisibleSeparatedText | Not commented yet. | bool |
 | isVisibleBarText | Not commented yet. | bool |
