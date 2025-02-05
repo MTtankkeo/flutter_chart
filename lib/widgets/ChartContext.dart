@@ -16,6 +16,7 @@ mixin ChartContext<T extends DrivenChart> on State<T> {
     return widget.theme ?? ChartStyle.maybeOf(context)?.theme ?? ChartTheme.light;
   }
 
+  /// Returns the default animation setting values that is properties defined all.
   ChartAnimation get defaultAnimation {
     return ChartAnimation(
       fadeDuration: Duration(seconds: 1),
@@ -25,6 +26,7 @@ mixin ChartContext<T extends DrivenChart> on State<T> {
     );
   }
 
+  /// Returns the default behavior that is properties defined all.
   ChartBehavior get defaultBehavior {
     return ChartBehavior(
       tooltip: ChartTooltip<ChartLabeledState>(builder: (context, state) {
