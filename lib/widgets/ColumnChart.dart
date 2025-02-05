@@ -1,10 +1,12 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_chartx/components/ChartAnimation.dart';
+import 'package:flutter_chartx/components/ChartBehavior.dart';
 import 'package:flutter_chartx/components/ChartController.dart';
 import 'package:flutter_chartx/components/ChartLabeledData.dart';
 import 'package:flutter_chartx/components/ChartPosition.dart';
 import 'package:flutter_chartx/components/ChartState.dart';
+import 'package:flutter_chartx/components/ChartTooltip.dart';
 import 'package:flutter_chartx/components/types.dart';
 import 'package:flutter_chartx/widgets/ChartContext.dart';
 import 'package:flutter_chartx/widgets/ChartStyle.dart';
@@ -25,11 +27,11 @@ class ColumnChart extends DrivenChart {
     required this.datas,
     this.controller,
     this.animation,
+    this.behavior,
     this.backgroundColor,
     this.barRatio = 0.5,
     this.maxValue,
     this.markType = ChartMarkType.integer,
-    this.theme,
     this.onTap,
     this.onDoubleTap,
     this.onLongPress,
@@ -61,6 +63,9 @@ class ColumnChart extends DrivenChart {
   /// The instance that defines current animation setting values of the chart.
   final ChartAnimation? animation;
 
+  /// The instance that defines current behavior of the chart.
+  final ChartBehavior? behavior;
+
   /// The background color excluding the separated text area and the bottom labels area.
   final Color? backgroundColor;
 
@@ -72,9 +77,6 @@ class ColumnChart extends DrivenChart {
 
   /// The value that defines type of how to display values in a chart.
   final ChartMarkType markType;
-
-  /// The value that defines the theme in this chart.
-  final ChartTheme? theme;
 
   /// The callback that is called when each bar in the column chart is single tapped.
   final ChartInteractionCallback? onTap;
@@ -119,9 +121,8 @@ class _ColumnChartState extends State<ColumnChart> with ChartContext, TickerProv
   /// Returns a list that defines values from the given data list.
   List<double> get values => widget.datas.map((data) => data.value).toList();
 
-  ChartTheme get theme {
-    return widget.theme ?? ChartStyle.maybeOf(context)?.theme ?? ChartTheme.light;
-  }
+  @override
+  TickerProvider get vsync => this;
 
   @override
   ChartAnimation get animation {
@@ -131,15 +132,10 @@ class _ColumnChartState extends State<ColumnChart> with ChartContext, TickerProv
   }
 
   @override
-  TickerProvider get vsync => this;
-
-  ChartAnimation get defaultAnimation {
-    return ChartAnimation(
-      fadeDuration: Duration(seconds: 1),
-      fadeCurve: Curves.easeOutQuart,
-      transitionDuration: Duration(milliseconds: 500),
-      transitionCurve: Curves.easeInOutQuad
-    );
+  ChartBehavior get behavior {
+    return defaultBehavior
+      .merge(ChartStyle.maybeOf(context)?.behavior)
+      .merge(widget.behavior);
   }
 
   Color get defaultSeparatedLineColor {
