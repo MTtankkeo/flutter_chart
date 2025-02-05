@@ -40,6 +40,8 @@ ColumnChart(
 | ---- | ----------- | ---- |
 | datas | The values that defines current the datas of column chart. | List<ChartLabeledData> |
 | controller | The instance that defines the current controller of the chart. | ChartController? |
+| animation | The instance that defines current animation setting values of the chart. | ChartAnimation? |
+| behavior | The instance that defines the current controller of the chart. | ChartBehavior? |
 | backgroundColor | The background color excluding the separated text area and the bottom labels area. | Color? |
 | barRatio | The ratio that is rate of width at which the bar is rendered in the bar area. | double |
 | maxValue | The value that defines the maximum value in this chart. | double? |
