@@ -4,6 +4,7 @@ export 'widgets/ChartStyle.dart';
 export 'widgets/DrivenChart.dart';
 export 'widgets/ColumnChart.dart';
 export 'widgets/ChartContext.dart';
+export 'widgets/ChartPainter.dart';
 
 export 'components/types.dart';
 export 'components/ChartAnimation.dart';
