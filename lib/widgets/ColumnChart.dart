@@ -50,6 +50,7 @@ class ColumnChart extends DrivenChart {
     this.barInnerTextStyle,
     this.barOuterTextStyle,
     this.barTextAlignment = ChartBarTextAlignment.inner_leading,
+    this.barBorderRadius = BorderRadius.zero,
     this.isVisibleSeparatedText = true,
     this.isVisibleBarText = false,
     this.isVisibleLabel = true,
@@ -106,6 +107,7 @@ class ColumnChart extends DrivenChart {
   final ChartTextStyleBuilder<ChartLabeledState>? barInnerTextStyle;
   final ChartTextStyleBuilder<ChartLabeledState>? barOuterTextStyle;
   final ChartBarTextAlignment barTextAlignment;
+  final BorderRadius barBorderRadius;
 
   final bool isVisibleSeparatedText;
   final bool isVisibleBarText;
@@ -282,13 +284,14 @@ class _ColumnChartState extends State<ColumnChart> with ChartContext, TickerProv
           labelTextStyle: defaultLabelTextStyle.merge(widget.labelTextStyle),
           barInnerTextMargin: widget.barInnerTextMargin,
           barOuterTextMargin: widget.barOuterTextMargin,
-          barTextAlignment: widget.barTextAlignment,
           barInnerTextStyle: (state) {
             return defaultBarInnerTextStyle.merge(widget.barInnerTextStyle?.call(state));
           },
           barOuterTextStyle: (state) {
             return defaultBarOuterTextStyleOf(state).merge(widget.barOuterTextStyle?.call(state));
           },
+          barTextAlignment: widget.barTextAlignment,
+          barBorderRadius: widget.barBorderRadius,
           isVisibleSeparatedText: widget.isVisibleSeparatedText,
           isVisibleBarText: widget.isVisibleBarText,
           isVisibleLabel: widget.isVisibleLabel
@@ -320,9 +323,10 @@ class ColumnChartPainter extends CustomPainter {
     required this.labelTextStyle,
     required this.barInnerTextMargin,
     required this.barOuterTextMargin,
-    required this.barTextAlignment,
     required this.barInnerTextStyle,
     required this.barOuterTextStyle,
+    required this.barTextAlignment,
+    required this.barBorderRadius,
     required this.isVisibleSeparatedText,
     required this.isVisibleBarText,
     required this.isVisibleLabel,
@@ -348,9 +352,10 @@ class ColumnChartPainter extends CustomPainter {
   final TextStyle labelTextStyle;
   final double barInnerTextMargin;
   final double barOuterTextMargin;
-  final ChartBarTextAlignment barTextAlignment;
   final ChartTextStyleBuilder<ChartLabeledState> barInnerTextStyle;
   final ChartTextStyleBuilder<ChartLabeledState> barOuterTextStyle;
+  final ChartBarTextAlignment barTextAlignment;
+  final BorderRadius barBorderRadius;
 
   final bool isVisibleSeparatedText;
   final bool isVisibleBarText;
@@ -494,10 +499,10 @@ class ColumnChartPainter extends CustomPainter {
       final startX = consumed.width + (areaWidth * i) + (areaWidth - barWidth) / 2;
       final startY = maxHeight - height;
       final paint = Paint()..color = target.data.color;
-      final rect = Rect.fromLTRB(startX, startY, startX + barWidth, maxHeight);
+      final rrect = barBorderRadius.toRRect(Rect.fromLTRB(startX, startY, startX + barWidth, maxHeight));
 
-      target.position = ChartPosition(path: Path()..addRect(rect));
-      canvas.drawRect(rect, paint);
+      target.position = ChartPosition(path: Path()..addRRect(rrect));
+      canvas.drawRRect(rrect, paint);
 
       if (isVisibleBarText) {
         final text = "${target.value.round()}";

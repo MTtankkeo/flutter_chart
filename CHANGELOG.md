@@ -18,3 +18,6 @@
 * Added `barTextInnerStyle` property in `ColumnChart` for the bar text rendering dynamically.
 * Added `barTextOuterStyle` property in `ColumnChart` for the bar text rendering dynamically.
 * Modify about `ChartBarTextAlignment` enumeration.
+
+## 1.0.0-dev6
+* Added `barBorderRadius` property in `ColumnChart` for applying the bar border radius.
