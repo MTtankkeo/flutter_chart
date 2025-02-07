@@ -19,7 +19,7 @@ enum ChartSeparatedTextAlignment {
 
 /// Signature for the enumeration that defines alignment type about bar text.
 enum ChartBarTextAlignment {
-  center,
+  inner_center,
   inner_leading,
   inner_trailing,
   outer,
