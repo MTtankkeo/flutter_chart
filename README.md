@@ -68,6 +68,7 @@ ColumnChart(
 | barTextOuterStyle | Not commented yet. | ChartTextStyleBuilder? |
 | barTextAlignment | Not commented yet. | ChartBarTextAlignment |
 | barBorderRadius | Not commented yet. | BorderRadius |
+| barColor | Not commented yet. | Color? |
 | isVisibleSeparatedText | Not commented yet. | bool |
 | isVisibleBarText | Not commented yet. | bool |
 | isVisibleLabel | Not commented yet. | bool |
