@@ -16,7 +16,7 @@ This package provides widgets that can draw simple graphs to complex chart graph
 ```
 
 # Preview
-![column-chart](https://github.com/user-attachments/assets/a81e24cc-ec07-472f-a284-54f41ee21236)
+![column-chart](https://github.com/user-attachments/assets/8fe9254b-d981-442c-9563-35505aac4472)
 
 # Usage
 The following explains the basic usage of this package.
