@@ -183,8 +183,6 @@ abstract class GridLabeledChartPainter extends DrivenChartPainter<ChartLabeledSt
         final textWidth = textPainter.width;
         final textHeight = height - textPainter.size.height / 2;
 
-        print(separatedTextAlignment);
-
         switch (separatedTextAlignment) {
           case ChartSeparatedTextAlignment.center:
             separatedTextDirection == ChartSeparatedTextDirection.leading

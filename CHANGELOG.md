@@ -23,3 +23,6 @@
 * Added `barBorderRadius` property in `ColumnChart` for applying the bar border radius.
 * Added `ChartSeparatedTextDirection` enumeration to improve customization settings.
 * Added `separatedTextDirection` property in `ColumnChart` to improve customization settings.
+
+## 1.0.0-dev7
+* Added `barColor` property in `ColumnChart` for default bar color settings.

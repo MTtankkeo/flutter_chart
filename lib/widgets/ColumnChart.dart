@@ -42,7 +42,8 @@ class ColumnChart extends DrivenChart {
     this.barInnerTextStyle,
     this.barOuterTextStyle,
     this.barTextAlignment = ChartBarTextAlignment.outer,
-    this.barBorderRadius = BorderRadius.zero,
+    this.barBorderRadius = const BorderRadius.vertical(top: Radius.circular(5)),
+    this.barColor,
     this.isVisibleSeparatedText = true,
     this.isVisibleBarText = false,
     this.isVisibleLabel = true,
@@ -101,6 +102,7 @@ class ColumnChart extends DrivenChart {
   final ChartTextStyleBuilder<ChartLabeledState>? barOuterTextStyle;
   final ChartBarTextAlignment barTextAlignment;
   final BorderRadius barBorderRadius;
+  final Color? barColor;
 
   final bool isVisibleSeparatedText;
   final bool isVisibleBarText;
@@ -134,6 +136,12 @@ class _ColumnChartState extends State<ColumnChart> with ChartContext, TickerProv
     return defaultBehavior
       .merge(ChartStyle.maybeOf(context)?.behavior)
       .merge(widget.behavior);
+  }
+
+  Color get defaultBarColor {
+    return theme == ChartTheme.light
+      ? Colors.black
+      : Colors.white;
   }
 
   Color get defaultSeparatedLineColor {
@@ -286,6 +294,7 @@ class _ColumnChartState extends State<ColumnChart> with ChartContext, TickerProv
           },
           barTextAlignment: widget.barTextAlignment,
           barBorderRadius: widget.barBorderRadius,
+          barColor: defaultBarColor,
           isVisibleSeparatedText: widget.isVisibleSeparatedText,
           isVisibleBarText: widget.isVisibleBarText,
           isVisibleLabel: widget.isVisibleLabel
@@ -325,6 +334,7 @@ class ColumnChartPainter extends GridLabeledChartPainter {
     required this.barOuterTextStyle,
     required this.barTextAlignment,
     required this.barBorderRadius,
+    required this.barColor,
     required this.isVisibleBarText,
   });
 
@@ -336,6 +346,7 @@ class ColumnChartPainter extends GridLabeledChartPainter {
   final ChartTextStyleBuilder<ChartLabeledState> barOuterTextStyle;
   final ChartBarTextAlignment barTextAlignment;
   final BorderRadius barBorderRadius;
+  final Color barColor;
 
   final bool isVisibleBarText;
 
@@ -361,7 +372,7 @@ class ColumnChartPainter extends GridLabeledChartPainter {
       // About the position of a bar.
       final startX = constraint.left + (areaWidth * i) + (areaWidth - barWidth) / 2;
       final startY = maxHeight - height;
-      final paint = Paint()..color = target.data.color;
+      final paint = Paint()..color = target.data.color ?? barColor;
       final rrect = barBorderRadius.toRRect(Rect.fromLTRB(startX, startY, startX + barWidth, maxHeight));
 
       target.position = ChartPosition(path: Path()..addRRect(rrect));

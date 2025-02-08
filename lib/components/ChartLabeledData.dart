@@ -4,12 +4,12 @@ class ChartLabeledData {
   const ChartLabeledData({
     required this.label,
     required this.value,
-    required this.color,
+    this.color,
   });
 
   final String label;
   final double value;
-  final Color color;
+  final Color? color;
 
   // equality comparison for ChartLabeledData
   @override
