@@ -17,6 +17,12 @@ enum ChartSeparatedTextAlignment {
   trailing
 }
 
+/// Signature for the enumeration that defines direction for separated text layout.
+enum ChartSeparatedTextDirection {
+  leading,
+  trailing
+}
+
 /// Signature for the enumeration that defines alignment type about bar text.
 enum ChartBarTextAlignment {
   inner_center,

@@ -3,8 +3,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_chartx/components/ChartState.dart';
 import 'package:flutter_chartx/components/types.dart';
 
-class ChartPainterConstriant {
-  const ChartPainterConstriant({
+class ChartPainterConstraint {
+  const ChartPainterConstraint({
     this.left = 0,
     this.right = 0,
     this.top = 0,
@@ -22,11 +22,11 @@ class ChartPainterConstriant {
 
 abstract class ChartPainter extends CustomPainter {
   /// This instance that defines the constraint about the chart layout.
-  var constraint = ChartPainterConstriant();
+  var constraint = ChartPainterConstraint();
 
   /// Sets the constraint about the current chart layout.
-  void constraintBy(ChartPainterConstriant given) {
-    constraint = ChartPainterConstriant(
+  void constraintBy(ChartPainterConstraint given) {
+    constraint = ChartPainterConstraint(
       left: constraint.left + given.left,
       right: constraint.right + given.right,
       top: constraint.top + given.top,
@@ -51,7 +51,7 @@ abstract class ChartPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    constraint = ChartPainterConstriant();
+    constraint = ChartPainterConstraint();
   }
 }
 
@@ -84,6 +84,7 @@ abstract class GridLabeledChartPainter extends DrivenChartPainter<ChartLabeledSt
     required this.separatedLineCap,
     required this.separatedTextStyle,
     required this.separatedTextAlignment,
+    required this.separatedTextDirection,
     required this.labelTextMargin,
     required this.labelTextStyle,
     required this.isVisibleSeparatedText,
@@ -102,6 +103,7 @@ abstract class GridLabeledChartPainter extends DrivenChartPainter<ChartLabeledSt
   final StrokeCap separatedLineCap;
   final TextStyle separatedTextStyle;
   final ChartSeparatedTextAlignment separatedTextAlignment;
+  final ChartSeparatedTextDirection separatedTextDirection;
   final double labelTextMargin;
   final TextStyle labelTextStyle;
   final bool isVisibleSeparatedText;
@@ -157,12 +159,17 @@ abstract class GridLabeledChartPainter extends DrivenChartPainter<ChartLabeledSt
       bottomLabelAreaHeight += labelTextMargin;
     }
 
-    final innerLeft = separatedTextMaxWidth + separatedTextMargin;
-    final bodyWidth = size.width - innerLeft;
+    final innerSide = separatedTextMaxWidth + separatedTextMargin;
+    final bodyWidth = size.width - innerSide;
     final bodyHeight = size.height - bottomLabelAreaHeight;
 
     if (backgroundColor != null) {
-      canvas.drawRect(Rect.fromLTRB(innerLeft, 0, size.width, bodyHeight), Paint()..color = backgroundColor!);
+      canvas.drawRect(
+        separatedTextDirection == ChartSeparatedTextDirection.leading
+          ? Rect.fromLTRB(innerSide, 0, size.width, bodyHeight)
+          : Rect.fromLTRB(0, 0, size.width - innerSide, bodyHeight),
+        Paint()..color = backgroundColor!
+      );
     }
 
     // Darw about the separated text and label and line.
@@ -176,17 +183,25 @@ abstract class GridLabeledChartPainter extends DrivenChartPainter<ChartLabeledSt
         final textWidth = textPainter.width;
         final textHeight = height - textPainter.size.height / 2;
 
+        print(separatedTextAlignment);
+
         switch (separatedTextAlignment) {
           case ChartSeparatedTextAlignment.center:
-            textPainter.paint(canvas, Offset((separatedTextMaxWidth - textWidth) / 2, textHeight));
+            separatedTextDirection == ChartSeparatedTextDirection.leading
+              ? textPainter.paint(canvas, Offset((separatedTextMaxWidth - textWidth) / 2, textHeight))
+              : textPainter.paint(canvas, Offset(size.width - (separatedTextMaxWidth + textWidth) / 2, textHeight));
             break;
 
           case ChartSeparatedTextAlignment.leading:
-            textPainter.paint(canvas, Offset(0, textHeight));
+            separatedTextDirection == ChartSeparatedTextDirection.leading
+              ? textPainter.paint(canvas, Offset(0, textHeight))
+              : textPainter.paint(canvas, Offset(size.width - textWidth, textHeight));
             break;
 
           case ChartSeparatedTextAlignment.trailing:
-            textPainter.paint(canvas, Offset(separatedTextMaxWidth - textWidth, textHeight));
+            separatedTextDirection == ChartSeparatedTextDirection.leading
+              ? textPainter.paint(canvas, Offset(separatedTextMaxWidth - textWidth, textHeight))
+              : textPainter.paint(canvas, Offset(size.width - separatedTextMaxWidth, textHeight));
             break;
         }
       }
@@ -197,7 +212,11 @@ abstract class GridLabeledChartPainter extends DrivenChartPainter<ChartLabeledSt
         separatedLinePaint.strokeWidth = separatedBorderWidth;
       }
 
-      canvas.drawLine(Offset(innerLeft, height), Offset(size.width, height), separatedLinePaint);
+      if (separatedTextDirection == ChartSeparatedTextDirection.leading) {
+        canvas.drawLine(Offset(innerSide, height), Offset(size.width, height), separatedLinePaint);
+      } else {
+        canvas.drawLine(Offset(0, height), Offset(size.width - innerSide, height), separatedLinePaint);
+      }
     }
 
     // Draw the label texts.
@@ -210,12 +229,24 @@ abstract class GridLabeledChartPainter extends DrivenChartPainter<ChartLabeledSt
         final areaWidth = bodyWidth / states.length;
         final textWidth = textPainter.width;
         final textHeight = size.height - bottomLabelAreaHeight;
+        final textMargin = separatedTextDirection == ChartSeparatedTextDirection.leading ? innerSide : 0;
 
-        textPainter.paint(canvas, Offset(((innerLeft + areaLeft) + areaWidth / 2) - textWidth / 2, textHeight + labelTextMargin));
+        textPainter.paint(
+          canvas,
+          Offset(((textMargin + areaLeft) + areaWidth / 2) - textWidth / 2, textHeight + labelTextMargin)
+        );
       }
     }
 
-    constraintBy(ChartPainterConstriant(left: innerLeft, bottom: bottomLabelAreaHeight));
+    // Sets the bottom constraint to the label area height.
+    constraintBy(ChartPainterConstraint(bottom: bottomLabelAreaHeight));
+
+    // Sets the left or right constraint to the inner side width.
+    if (separatedTextDirection == ChartSeparatedTextDirection.leading) {
+      constraintBy(ChartPainterConstraint(left: innerSide));
+    } else {
+      constraintBy(ChartPainterConstraint(right: innerSide));
+    }
   }
 
   /// Draws the foreground elements of the chart after background drawing.

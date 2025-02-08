@@ -31,6 +31,7 @@ class ColumnChart extends DrivenChart {
     this.separatedTextStyle,
     this.separatedTextMargin = 15,
     this.separatedTextAlignment = ChartSeparatedTextAlignment.trailing,
+    this.separatedTextDirection = ChartSeparatedTextDirection.leading,
     this.separatedBorderColor,
     this.separatedBorderWidth,
     this.separatedLineCap = StrokeCap.butt,
@@ -86,6 +87,7 @@ class ColumnChart extends DrivenChart {
   final TextStyle? separatedTextStyle;
   final double separatedTextMargin;
   final ChartSeparatedTextAlignment separatedTextAlignment;
+  final ChartSeparatedTextDirection separatedTextDirection;
   final Color? separatedBorderColor;
   final double? separatedBorderWidth;
   final StrokeCap separatedLineCap;
@@ -268,6 +270,7 @@ class _ColumnChartState extends State<ColumnChart> with ChartContext, TickerProv
           separatedTextStyle: defaultSeparatedTextStyle.merge(widget.separatedTextStyle),
           separatedTextMargin: widget.separatedTextMargin,
           separatedTextAlignment: widget.separatedTextAlignment,
+          separatedTextDirection: widget.separatedTextDirection,
           separatedBorderColor: widget.separatedBorderColor ?? defaultSeparatedBorderColor,
           separatedBorderWidth: widget.separatedBorderWidth ?? widget.separatedLineWidth,
           separatedLineCap: widget.separatedLineCap,
@@ -306,6 +309,7 @@ class ColumnChartPainter extends GridLabeledChartPainter {
     required super.separatedTextMargin,
     required super.separatedTextStyle,
     required super.separatedTextAlignment,
+    required super.separatedTextDirection,
     required super.separatedBorderColor,
     required super.separatedBorderWidth,
     required super.separatedLineCap,
@@ -355,7 +359,7 @@ class ColumnChartPainter extends GridLabeledChartPainter {
       final height = ((target.value * fadePercent) / maxValue) * maxHeight;
 
       // About the position of a bar.
-      final startX = constraint.width + (areaWidth * i) + (areaWidth - barWidth) / 2;
+      final startX = constraint.left + (areaWidth * i) + (areaWidth - barWidth) / 2;
       final startY = maxHeight - height;
       final paint = Paint()..color = target.data.color;
       final rrect = barBorderRadius.toRRect(Rect.fromLTRB(startX, startY, startX + barWidth, maxHeight));

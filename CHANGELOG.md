@@ -9,8 +9,8 @@
 
 ## 1.0.0-dev3
 * Added functionality and properties to enable user interactions (gestures) such as `onTap`, `onDoubleTap`, and `onLongPress` in `ColumnChart`.
-* Added `ChartPosition` class for user interaction.
-* Added `ChartInteractionCallback` enumeration for user interaction.
+* Added `ChartPosition` class to improve customization settings.
+* Added `ChartInteractionCallback` enumeration to improve customization settings.
 
 ## 1.0.0-dev5
 * Added `barInnerTextMargin` property in `ColumnChart` for the bar text rendering dynamically.
@@ -21,3 +21,5 @@
 
 ## 1.0.0-dev6
 * Added `barBorderRadius` property in `ColumnChart` for applying the bar border radius.
+* Added `ChartSeparatedTextDirection` enumeration to improve customization settings.
+* Added `separatedTextDirection` property in `ColumnChart` to improve customization settings.

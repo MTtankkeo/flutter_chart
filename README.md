@@ -56,6 +56,7 @@ ColumnChart(
 | separatedTextStyle | Not commented yet. | TextStyle? |
 | separatedTextMargin | Not commented yet. | double |
 | separatedTextAlignment | Not commented yet. | ChartSeparatedTextAlignment |
+| separatedTextDirection | Not commented yet. | ChartSeparatedTextDirection |
 | separatedBorderColor | Not commented yet. | Color? |
 | separatedBorderWidth | Not commented yet. | double? |
 | separatedLineCap | Not commented yet. | StrokeCap |
