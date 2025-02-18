@@ -8,7 +8,9 @@ class ChartDetector extends StatelessWidget {
     required this.controller,
     this.onTap,
     this.onDoubleTap,
-    this.onLongPress
+    this.onLongPress,
+    this.onHoverStart,
+    this.onHoverEnd
   });
 
   final Widget child;
@@ -16,6 +18,8 @@ class ChartDetector extends StatelessWidget {
   final ChartInteractionCallback? onTap;
   final ChartInteractionCallback? onDoubleTap;
   final ChartInteractionCallback? onLongPress;
+  final ChartInteractionCallback? onHoverStart;
+  final ChartInteractionCallback? onHoverEnd;
 
   @override
   Widget build(BuildContext context) {

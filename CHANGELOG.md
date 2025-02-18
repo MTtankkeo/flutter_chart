@@ -25,4 +25,6 @@
 * Added `separatedTextDirection` property in `ColumnChart` to improve customization settings.
 
 ## 1.0.0-dev7
+* Created related instances only when animation occurs, improving memory efficiency.
 * Added `barColor` property in `ColumnChart` for default bar color settings.
+* Added `ChartDetector` widget for modularization about the interaction logic.

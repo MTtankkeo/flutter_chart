@@ -2,7 +2,7 @@ name: flutter_chartx
 description: >
   This package offers widgets for drawing simple to complex charts with customizable
   options like visibility, color, line width, line color, text color, and more.
-version: 1.0.0-dev6
+version: 1.0.0-dev7
 publisher: ttankkeo112@gmail.com
 repository: https://github.com/MTtankkeo/flutter_chart
 

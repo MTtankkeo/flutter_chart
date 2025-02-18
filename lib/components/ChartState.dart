@@ -1,4 +1,8 @@
+import 'dart:collection';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chartx/components/ChartAnimation.dart';
 import 'package:flutter_chartx/components/ChartLabeledData.dart';
 import 'package:flutter_chartx/components/ChartPosition.dart';
 import 'package:flutter_chartx/widgets/ChartContext.dart';
@@ -14,53 +18,107 @@ abstract class ChartState extends Listenable {
   bool hitTest(Offset point);
 }
 
-class ChartLabeledState extends ChartState {
-  ChartLabeledState({ 
-    required ChartContext context,
-    required ChartLabeledData initialData
-  }) : data = initialData {
-    _controller = AnimationController(vsync: context.vsync, duration: context.animation.transitionDuration);
-    _animation = CurvedAnimation(parent: _controller, curve: context.animation.transitionCurve!);
-    _tween = Tween(begin: data.value, end: data.value);
+abstract class AnimatedChartState extends ChartState {
+  AnimatedChartState({
+    required this.vsync,
+  });
+
+  final TickerProvider vsync;
+
+  final animationMap = HashMap<String, ({
+    AnimationController controller,
+    Tween<double> tween,
+    Curve curve,
+  })>();
+  
+  final listeners = ObserverList<VoidCallback>();
+
+  double? animationValueOf(String key) {
+    final animation = animationMap[key];
+    if (animation != null) {
+      return animation.tween.transform(animation.curve.transform(animation.controller.value));
+    }
+
+    return null;
   }
 
-  late final AnimationController _controller;
-  late final CurvedAnimation _animation;
-  late final Tween<double> _tween;
+  void animateTo(String key, double from, double to, Duration duration, Curve curve) {
+    if (animationMap.containsKey(key)) {
+      final animation = animationMap[key]!;
+      animation.tween.begin = from;
+      animation.tween.end = to;
 
-  ChartLabeledData data;
-  ChartPosition? position;
+      if (from != to) {
+        animation.controller.stop();
+        animation.controller.reset();
+        animation.controller.forward();
+      }
+
+      return;
+    }
+
+    final controller = AnimationController(vsync: vsync, duration: duration)
+      ..addListener(notifyListeners)
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          animationMap.remove(key)?.controller.dispose();
+        }
+      })
+      ..forward();
+
+    animationMap[key] = (
+      controller: controller,
+      curve: curve,
+      tween: Tween(begin: from, end: to)
+    );
+  }
 
   @override
   void addListener(VoidCallback listener) {
-    _animation.addListener(listener);
+    assert(!listeners.contains(listener), "Already exists a given listener.");
+    listeners.add(listener);
   }
 
   @override
   void removeListener(VoidCallback listener) {
-    _animation.removeListener(listener);
+    assert(listeners.contains(listener), "Already not exists a given listener.");
+    listeners.remove(listener);
   }
+
+  void notifyListeners() {
+    for (final listener in listeners) {
+      listener.call();
+    }
+  }
+}
+
+class ChartLabeledState extends AnimatedChartState {
+  ChartLabeledState({ 
+    required this.context,
+    required ChartLabeledData initialData
+  }) : data = initialData, super(vsync: context.vsync);
+
+  final ChartContext context;
+
+  ChartLabeledData data;
+  ChartPosition? position;
 
   void updateTo(ChartLabeledData given) {
     final double oldValue = value;
     final double newValue = given.value;
-
-    _tween.begin = oldValue;
-    _tween.end = newValue;
+    final ChartAnimation animation = context.animation;
     data = given;
 
-    if (oldValue != newValue) {
-      _controller.stop();
-      _controller.reset();
-      _controller.forward();
-    }
+    assert(animation.transitionDuration != null);
+    assert(animation.transitionCurve != null);
+    animateTo("transition", oldValue, newValue, animation.transitionDuration!, animation.transitionCurve!);
   }
 
   @override
   get key => data.label;
 
   @override
-  double get value => _tween.transform(_animation.value);
+  double get value => animationValueOf("transition") ?? data.value;
 
   @override
   bool hitTest(Offset point) {

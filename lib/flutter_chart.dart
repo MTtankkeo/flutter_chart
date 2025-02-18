@@ -3,6 +3,7 @@ library flutter_chartx;
 export 'widgets/ChartStyle.dart';
 export 'widgets/DrivenChart.dart';
 export 'widgets/ColumnChart.dart';
+export 'widgets/ChartDetector.dart';
 export 'widgets/ChartContext.dart';
 export 'widgets/ChartPainter.dart';
 
