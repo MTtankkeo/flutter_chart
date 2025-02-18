@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_chartx/components/ChartColor.dart';
 import 'package:flutter_chartx/flutter_chart.dart';
-import 'package:flutter_chartx/widgets/ChartDetector.dart';
 
 /// ## Introduction
 /// A column chart is a method of displaying data with categories
@@ -244,11 +244,13 @@ class _ColumnChartState extends State<ColumnChart> with ChartContext, TickerProv
     final contextTheme = Theme.of(context);
     final defaultTextStyle = contextTheme.textTheme.bodyMedium ?? TextStyle();
 
-    return ChartDetector(
+    return ChartDetector<ChartLabeledState>(
       controller: _controller,
       onTap: widget.onTap,
       onDoubleTap: widget.onDoubleTap,
       onLongPress: widget.onLongPress,
+      onHoverStart: (state) => state.hoverStart(),
+      onHoverEnd: (state) => state.hoverEnd(),
       child: CustomPaint(
         painter: ColumnChartPainter(
           states: _controller.states,
@@ -356,9 +358,10 @@ class ColumnChartPainter extends GridLabeledChartPainter {
       final height = ((target.value * fadePercent) / maxValue) * maxHeight;
 
       // About the position of a bar.
+      final color = ChartColor.hoverOf(target.data.color ?? barColor, target.hover, 0.2);
       final startX = constraint.left + (areaWidth * i) + (areaWidth - barWidth) / 2;
       final startY = maxHeight - height;
-      final paint = Paint()..color = target.data.color ?? barColor;
+      final paint = Paint()..color = color;
       final rrect = barBorderRadius.toRRect(Rect.fromLTRB(startX, startY, startX + barWidth, maxHeight));
 
       target.position = ChartPosition(path: Path()..addRRect(rrect));

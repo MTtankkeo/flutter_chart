@@ -5,13 +5,17 @@ class ChartAnimation {
     this.fadeDuration,
     this.fadeCurve,
     this.transitionDuration,
-    this.transitionCurve
+    this.transitionCurve,
+    this.hoverDuration,
+    this.hoverCurve
   });
 
   final Duration? fadeDuration;
   final Curve? fadeCurve;
   final Duration? transitionDuration;
   final Curve? transitionCurve;
+  final Duration? hoverDuration;
+  final Curve? hoverCurve;
 
   /// Returns a new chart animation that is a combination of this animation and the given [other] animation.
   ChartAnimation merge(ChartAnimation? other) {
@@ -22,6 +26,8 @@ class ChartAnimation {
       fadeCurve: other.fadeCurve ?? fadeCurve,
       transitionDuration: other.transitionDuration ?? transitionDuration,
       transitionCurve: other.transitionCurve ?? transitionCurve,
+      hoverDuration: hoverDuration,
+      hoverCurve: hoverCurve
     );
   }
 }

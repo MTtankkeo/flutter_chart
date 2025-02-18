@@ -100,13 +100,16 @@ class ChartLabeledState extends AnimatedChartState {
 
   final ChartContext context;
 
+  ChartAnimation get animation => context.animation;
+
   ChartLabeledData data;
   ChartPosition? position;
+
+  double hoverAnimTarget = 0;
 
   void updateTo(ChartLabeledData given) {
     final double oldValue = value;
     final double newValue = given.value;
-    final ChartAnimation animation = context.animation;
     data = given;
 
     assert(animation.transitionDuration != null);
@@ -114,11 +117,22 @@ class ChartLabeledState extends AnimatedChartState {
     animateTo("transition", oldValue, newValue, animation.transitionDuration!, animation.transitionCurve!);
   }
 
+  void hoverStart() {
+    animateTo("hover", hover, 1, animation.hoverDuration!, animation.hoverCurve!);
+    hoverAnimTarget = 1;
+  }
+
+  void hoverEnd() {
+    animateTo("hover", hover, 0, animation.hoverDuration!, animation.hoverCurve!);
+    hoverAnimTarget = 0;
+  }
+
   @override
   get key => data.label;
 
   @override
   double get value => animationValueOf("transition") ?? data.value;
+  double get hover => animationValueOf("hover") ?? hoverAnimTarget;
 
   @override
   bool hitTest(Offset point) {
