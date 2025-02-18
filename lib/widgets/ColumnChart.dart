@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_chartx/flutter_chart.dart';
+import 'package:flutter_chartx/widgets/ChartDetector.dart';
 
 /// ## Introduction
 /// A column chart is a method of displaying data with categories
@@ -243,26 +244,11 @@ class _ColumnChartState extends State<ColumnChart> with ChartContext, TickerProv
     final contextTheme = Theme.of(context);
     final defaultTextStyle = contextTheme.textTheme.bodyMedium ?? TextStyle();
 
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTapUp: widget.onTap != null ? (details) {
-        final target = _controller.findStateByHitTest(details.localPosition);
-        if (target != null) {
-          widget.onTap?.call(target);
-        }
-      } : null,
-      onDoubleTapDown: widget.onDoubleTap != null ? (details) {
-        final target = _controller.findStateByHitTest(details.localPosition);
-        if (target != null) {
-          widget.onDoubleTap?.call(target);
-        }
-      } : null,
-      onLongPressStart: widget.onLongPress != null ? (details) {
-        final target = _controller.findStateByHitTest(details.localPosition);
-        if (target != null) {
-          widget.onLongPress?.call(target);
-        }
-      } : null,
+    return ChartDetector(
+      controller: _controller,
+      onTap: widget.onTap,
+      onDoubleTap: widget.onDoubleTap,
+      onLongPress: widget.onLongPress,
       child: CustomPaint(
         painter: ColumnChartPainter(
           states: _controller.states,
