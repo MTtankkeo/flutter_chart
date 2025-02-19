@@ -23,7 +23,7 @@ mixin ChartContext<T extends DrivenChart> on State<T> {
       fadeCurve: Curves.easeOutQuart,
       transitionDuration: Duration(milliseconds: 500),
       transitionCurve: Curves.easeInOutQuad,
-      hoverDuration: Duration(milliseconds: 200),
+      hoverDuration: Duration(milliseconds: 250),
       hoverCurve: Curves.ease
     );
   }

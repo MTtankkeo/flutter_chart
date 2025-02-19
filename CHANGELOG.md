@@ -28,3 +28,8 @@
 * Created related instances only when animation occurs, improving memory efficiency.
 * Added `barColor` property in `ColumnChart` for default bar color settings.
 * Added `ChartDetector` widget for modularization about the interaction logic.
+
+## 1.0.0-dev8
+* Added `ChartColor` static class for converting the color about chart.
+* Added `onHoverStart` property in `ColumnChart` for the hover event about the each bar.
+* Added `onHoverEnd` property in `ColumnChart` for the hover event about the each bar.

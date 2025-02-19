@@ -50,6 +50,8 @@ ColumnChart(
 | onTap | The callback that is called when each bar in the column chart is single tapped. | ChartInteractionCallback? |
 | onDoubleTap | The callback that is called when each bar in the column chart is double tapped. | ChartInteractionCallback? |
 | onLongPress | The callback that is called when each bar in the column chart is long pressed. | ChartInteractionCallback? |
+| onHoverStart | The callback that is called when each bar in the column chart is hover started. | ChartInteractionCallback? |
+| onHoverEnd | The callback that is called when each bar in the column chart is hover ended. | ChartInteractionCallback? |
 | separatedLineCount | Not commented yet. | int |
 | separatedLineColor | Not commented yet. | Color? |
 | separatedLineWidth | Not commented yet. | double |

@@ -26,6 +26,8 @@ class ColumnChart extends DrivenChart {
     this.onTap,
     this.onDoubleTap,
     this.onLongPress,
+    this.onHoverStart,
+    this.onHoverEnd,
     this.separatedLineCount = 5,
     this.separatedLineWidth = 2,
     this.separatedLineColor,
@@ -82,6 +84,12 @@ class ColumnChart extends DrivenChart {
 
   /// The callback that is called when each bar in the column chart is long pressed.
   final ChartInteractionCallback? onLongPress;
+
+  /// The callback that is called when each bar in the column chart is hover started.
+  final ChartInteractionCallback? onHoverStart;
+
+  /// The callback that is called when each bar in the column chart is hover ended.
+  final ChartInteractionCallback? onHoverEnd;
 
   final int separatedLineCount;
   final Color? separatedLineColor;
@@ -249,8 +257,8 @@ class _ColumnChartState extends State<ColumnChart> with ChartContext, TickerProv
       onTap: widget.onTap,
       onDoubleTap: widget.onDoubleTap,
       onLongPress: widget.onLongPress,
-      onHoverStart: (state) => state.hoverStart(),
-      onHoverEnd: (state) => state.hoverEnd(),
+      onHoverStart: (state) { widget.onHoverStart?.call(state); state.hoverStart(); },
+      onHoverEnd: (state) { widget.onHoverEnd?.call(state); state.hoverEnd(); },
       child: CustomPaint(
         painter: ColumnChartPainter(
           states: _controller.states,
